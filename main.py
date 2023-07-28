@@ -1,15 +1,23 @@
 import openai
 
 SYSTEM = "You are a helpful AI assistant that can answer questions provided by the user"
+HISTORY = [{"role": "system", "content": SYSTEM}]
 
-prompt = input("User: ")
+while True:
+    prompt = input("User: ")
 
-chat_completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {"role": "system", "content": SYSTEM},
-        {"role": "user", "content": prompt}
-    ]
-)
+    if prompt == "exit":
+        break
 
-print(f"GPT: {chat_completion.choices[0].message.content}")
+    HISTORY.append({"role": "user", "content": prompt})
+
+    chat_completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=HISTORY,
+    )
+
+    response = chat_completion.choices[0].message.content
+
+    HISTORY.append({"role": "assistant", "content": response})
+
+    print(f"GPT: {response}")
